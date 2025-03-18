@@ -5,9 +5,6 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,26 +24,6 @@ public class RconServer {
     private ExecutorService threadPool;
     private final ConcurrentHashMap<String, User> users;
     private final BanList ban = new BanList();
-
-    private static class BanList{
-        private final HashMap<String,LocalDateTime> bans = new HashMap<>();
-        public void ban(String key,int seconds){
-            bans.put(key,LocalDateTime.now().plusSeconds(seconds));
-        }
-        public void checkBanned(String key) throws Banned{
-            LocalDateTime ban = bans.get(key);
-            if (ban!=null) {
-                if (ban.isBefore(LocalDateTime.now())){
-                    bans.remove(key);
-                } else throw new Banned();
-            }
-        }
-    }
-    public static class Banned extends Exception{
-        private Banned(){
-            super("User banned");
-        }
-    }
 
     public RconServer(int port, CommandHandler handler, PrintStream logger, boolean debug) {
         this.port = port;
@@ -94,42 +71,6 @@ public class RconServer {
         users.remove(passwd);
         logger.println("[RCON] Utilisateur retiré: " + (username != null ? username : "anonyme"));
         return true;
-    }
-
-    public static class AntiDDOS{
-        private final int maxRPS;
-        private final HashMap<String,ArrayList<LocalDateTime>> history;
-        /**
-         * Construis un antiddos
-         * @param maxRPS Maximum de requêtes par seconde
-         */
-        AntiDDOS(int maxRPS){
-            this.history = new HashMap<>();
-            this.maxRPS = maxRPS;
-        }
-        private boolean verify(Socket socket) throws IOException {
-            final String addr = socket.getInetAddress().getHostAddress();
-            final LocalDateTime now = LocalDateTime.now();
-            ArrayList<LocalDateTime> connexions = history.get(addr);
-            if (connexions==null){
-                ArrayList<LocalDateTime> list = new ArrayList<>();
-                list.add(now);
-                history.put(addr,list);
-                return true;
-            } else {
-                connexions.add(now);
-                filter(connexions,now.minusSeconds(1));
-                if (connexions.size()>maxRPS){
-                    socket.close();
-                    return false;
-                } else return true;
-            }
-        }
-        private synchronized void filter(ArrayList<LocalDateTime> connexions,LocalDateTime time){
-            while (connexions.get(0).isBefore(time)){
-                connexions.remove(0);
-            }
-        }
     }
 
     private int maxLoginTrys = 3;
