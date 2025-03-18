@@ -1,9 +1,9 @@
-package net.raphaelgf.lib;
+package net.raphaelgf.lib.RconServer;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
-public class BanList{
+class BanList{
     private final HashMap<String, LocalDateTime> bans = new HashMap<>();
     public void ban(String key,int seconds){
         bans.put(key,LocalDateTime.now().plusSeconds(seconds));

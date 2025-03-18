@@ -1,4 +1,4 @@
-package net.raphaelgf.lib;
+package net.raphaelgf.lib.RconServer;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class AntiDDOS{
+class AntiDDOS{
     private final int maxRPS;
     private final HashMap<String, ArrayList<LocalDateTime>> history;
     /**

@@ -1,4 +1,4 @@
-package net.raphaelgf.lib;
+package net.raphaelgf.lib.RconServer;
 
 import java.io.*;
 import java.net.*;

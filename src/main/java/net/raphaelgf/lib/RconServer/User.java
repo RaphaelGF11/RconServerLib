@@ -1,4 +1,4 @@
-package net.raphaelgf.lib;
+package net.raphaelgf.lib.RconServer;
 
 public class User {
     public final String username; // can be null
